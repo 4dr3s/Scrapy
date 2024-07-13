@@ -2,10 +2,13 @@ import time
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 def get_account_name(soup, archivo_resultados):
-    account_name = soup.find('a', class_='x1i10hfl xjqpnuy xa49m3k xqeqjp1 x2hbi6w xdl72j9 x2lah0s xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r x2lwn1j xeuugli x1hl2dhg xggy1nq x1ja2u2z x1t137rt x1q0g3np x1lku1pv x1a2a7pz x6s0dn4 xjyslct x1ejq31n xd10rxx x1sy0etr x17r0tee x9f619 x1ypdohk x1f6kntn xwhw2v2 xl56j7k x17ydfre x2b8uid xlyipyv x87ps6o x14atkfc xcdnw81 x1i0vuye xjbqb8w xm3z3ea x1x8b98j x131883w x16mih1h x972fbf xcfux6l x1qhh985 xm0m39n xt0psk2 xt7dq6l xexx8yu x4uap5 x18d9i69 xkhd6sd x1n2onr6 x1n5bzlp xqnirrm xj34u2y x568u83')
+    account_name = soup.find('a',
+                             class_='x1i10hfl xjqpnuy xa49m3k xqeqjp1 x2hbi6w xdl72j9 x2lah0s xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r x2lwn1j xeuugli x1hl2dhg xggy1nq x1ja2u2z x1t137rt x1q0g3np x1lku1pv x1a2a7pz x6s0dn4 xjyslct x1ejq31n xd10rxx x1sy0etr x17r0tee x9f619 x1ypdohk x1f6kntn xwhw2v2 xl56j7k x17ydfre x2b8uid xlyipyv x87ps6o x14atkfc xcdnw81 x1i0vuye xjbqb8w xm3z3ea x1x8b98j x131883w x16mih1h x972fbf xcfux6l x1qhh985 xm0m39n xt0psk2 xt7dq6l xexx8yu x4uap5 x18d9i69 xkhd6sd x1n2onr6 x1n5bzlp xqnirrm xj34u2y x568u83')
     if account_name:
         link = account_name.get('href')
         archivo_resultados.write(f'Publicación de: {account_name.text}\n')
@@ -45,13 +48,19 @@ def img_vdo(soup, multimedia_list):
 def multimedia(soup, drive, archivo_resultados):
     multimedia_list = []
     img_vdo(soup, multimedia_list)
-    btn_next = drive.find_elements(By.TAG_NAME, 'button')
-    for btn in btn_next:
-        if ' _afxw _al46 _al47' == btn.get_attribute('class') and 'Siguiente' == btn.get_attribute('Siguiente'):
-            btn.click()
+    while True:
+        try:
+            btn_next = WebDriverWait(drive, 3).until(
+                EC.element_to_be_clickable(
+                    (By.XPATH, "//button[@aria-label='Siguiente' and contains(@class, '_afxw _al46 _al47')]"))
+            )
             time.sleep(5)
+            btn_next.click()
+            time.sleep(2)
             img_vdo(soup, multimedia_list)
-    time.sleep(3)
+        except Exception as e:
+            print(f"Ya no se encontro boton 'Siguiente'")
+            break
     archivo_resultados.write(f'Multimedia de la publicación: {multimedia_list}\n\n')
 
 
