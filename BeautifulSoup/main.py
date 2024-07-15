@@ -63,11 +63,11 @@ def multimedia(soup, drive, dictionari_insta):
     dictionari_insta["multimedia_link"] = multimedia_list
 
 
-def get_info(drive, posts_list):
+def get_info(drive, posts_list, dictionari_insta):
     for link in posts_list:
         drive.get(link)
         time.sleep(5)
-        dictionari_insta = {"link": link}
+        dictionari_insta["link"] = link
         print(f'Visitando la publicación: {link}')
         html = drive.page_source
         soup = BeautifulSoup(html, 'html.parser')
@@ -83,6 +83,7 @@ archivo_resultados = open('C:/Users/andre/Downloads/resultados_instagram.txt', '
 drive = webdriver.Firefox()
 drive.get('https://www.instagram.com/explore/tags/ver%C3%B3nicaabad/')
 posts_list = []
+dictionari_insta = {}
 time.sleep(5)
 article = drive.find_element(By.TAG_NAME, 'article')
 posts = article.find_elements(By.TAG_NAME, 'div')
@@ -90,7 +91,7 @@ for post in posts:
     if 'x1lliihq x1n2onr6 xh8yej3 x4gyw5p x2pgyrj x56m6dy x1ntc13c xn45foy x9i3mqj' == post.get_attribute('class'):
         link = post.find_element(By.XPATH, './a')
         posts_list.append(link.get_attribute('href'))
-get_info(drive, posts_list)
+get_info(drive, posts_list, dictionari_insta)
 
 for post in dictionari_insta_list:
     archivo_resultados.write(str(post) + '\n')
