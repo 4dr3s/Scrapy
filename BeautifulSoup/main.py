@@ -99,5 +99,3 @@ archivo_resultados.close()
 
 with open('C:/Users/andre/Downloads/datos_instagram.json', 'w', encoding='utf-8') as json_file:
     json.dump(dictionari_insta_list, json_file, ensure_ascii=False, indent=4)
-
-drive.close()
